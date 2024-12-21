@@ -48,7 +48,7 @@ const Products = () => {
        {/* Toast Notification */}
        {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
 
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {/* Render each product using ItemCard */}
         {productData.map((product) => (
           <ItemCard

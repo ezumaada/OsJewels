@@ -3,9 +3,9 @@ import ItemCard from '../../components/itemcard/ItemCard'; // Import your ItemCa
 import { Link } from 'react-router-dom';
 import products from '../../data/productData'; 
 
-const Necklaces = () => {
+const Earrings = () => {
     // Filter products based on the category prop
-    const categoryProducts = products.filter((product) => product.category === "necklaces");
+    const categoryProducts = products.filter((product) => product.category === "earrings");
     return (
       <div className="container mx-auto px-4 py-8">
          <h1 className="text-3xl font-bold mb-6">Watch Collection</h1>
@@ -31,14 +31,8 @@ const Necklaces = () => {
           </button></Link>
   
         </div>
-        <div>
-            <h1>Here's what our Products look like in real time</h1>
-            <div>
-                <img src="/images/" alt="" />
-            </div>
-        </div>
       </div>
     )
 }
 
-export default Necklaces
+export default Earrings

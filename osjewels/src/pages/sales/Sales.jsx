@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ItemCard from '../../components/itemcard/ItemCard'; // Import your ItemCard component
-import Navbar from '../../components/navbar/Navbar';
-import TopBanner from '../../components/topbanner/TopBanner';
+
+import { Link } from 'react-router-dom';
 import productData from '../../data/productData';
 import Toast from '../../components/toast/Toast';
 
@@ -35,6 +35,13 @@ const Sales = () => {
             addItemToCart={() => handleAddToCart(product)} // Pass the product to handleAddToCart
           />
         ))}
+      </div>
+      <div className="flex justify-center mt-6">
+        <Link to="/products">
+        <button className="bg-black text-white px-6 py-2 rounded">
+          View All Products
+        </button></Link>
+
       </div>
     </div>
   )

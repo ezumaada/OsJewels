@@ -42,12 +42,12 @@ const Navbar = () => {
     <div>
         {/* Navbar for small screens */}
       <div className="flex shadow-lg justify-between gap-6 mt-11 mx-[5vw] py-5 items-center p-4 md:hidden">
-        <div>        
+        <div className='flex items-center gap-3 flex-row'>        
          {/* Hamburger icon */}
             <button onClick={toggleSidebar} className="text-black">
-          <img src="/images/burger-icon.svg" alt="Hamburger-icon" className="h-8" />
+          <img src="/images/burger-icon.png" alt="Hamburger-icon" className="h-8" />
             </button>
-            <Link to="/categories"><img src="/images/search-icon.png" alt="search-icon" /></Link>
+            <Link to="/categories"><img src="/images/search-icon.svg" alt="search-icon" /></Link>
         </div>
          {/* Logo */}
          <img src="/images/oster-logo.png" alt="Logo" className="h-8" />

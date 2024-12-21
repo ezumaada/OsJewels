@@ -34,6 +34,13 @@ const Cert = () => {
               Gift with purchase may apply to any single piece of jewelry with a retail value of $1000. You will receive
               your personalized discount code via email after purchasing a watch via our online stores.
             </p>
+            <div className="flex justify-center mt-6">
+        <Link to="/watches">
+        <button className="bg-black text-white px-6 py-2 rounded">
+          Shop Now 
+        </button></Link>
+
+      </div>
           </div>
         </div>
 

@@ -1,5 +1,8 @@
 import React from 'react'
 import products from '../../data/productData'; 
+import ItemCard from '../../components/itemcard/ItemCard';
+import { Link } from 'react-router-dom';
+
 
 const Diamonds = () => {
       // Filter products based on the category prop

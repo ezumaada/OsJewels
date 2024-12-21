@@ -1,27 +1,46 @@
 import React from "react";
 import { useCart } from "../../cartcontext/CartContext";
+import { saveCart } from "../../services/saveCart"; // Import the saveCart function
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { cart, dispatch } = useCart();
 
   // Calculate total price
   const totalPrice = cart.reduce(
-    (total, item) => total + item.newPrice * item.quantity,
-    0
+    (total, item) => total + item.price * item.quantity, 0
   );
 
   // Calculate total items
-  const totalItems = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+
+  console.log("Cart contents:", cart);
+
+  // Handle saving the cart
+  const handleSaveCart = async () => {
+    const cartData = {
+      items: cart,
+      totalPrice,
+      totalItems,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      await saveCart(cartData);
+      alert("Cart saved successfully!");
+    } catch (error) {
+      console.error("Error saving cart:", error.message);
+      alert("Failed to save cart. Please try again.");
+    }
+  };
 
   const handleRemove = (id) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
   };
 
-  const handleQuantityChange = (id, quantity) => {
-    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
+  const handleQuantityChange = (id, change) => {
+    // Ensure quantity does not go below 1 when decreasing
+    dispatch({ type: "UPDATE_QUANTITY", payload: { id, change } });
   };
 
   return (
@@ -50,26 +69,34 @@ const Cart = () => {
                   />
                   <div className="flex-1">
                     <h2 className="text-xl font-bold">{item.title}</h2>
-                    <p className="text-gray-600">${item.newPrice}</p>
+                    <p className="text-gray-600">${item.price}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <label htmlFor={`quantity-${item.id}`} className="text-sm">
                         Quantity:
                       </label>
-                      <input
-                        id={`quantity-${item.id}`}
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(item.id, parseInt(e.target.value))
-                        }
-                        className="w-12 border rounded px-2 text-center"
-                      />
+
+                      {/* Quantity Change Buttons */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => dispatch({ type: 'DECREMENT_QUANTITY', payload: item.id })}
+                          className="bg-gray-300 text-black px-3 py-1 rounded"
+                          disabled={item.quantity <= 1}
+                        >
+                          -
+                        </button>
+                        <span className="mx-2">{item.quantity}</span>
+                        <button
+                           onClick={() => dispatch({ type: 'INCREMENT_QUANTITY', payload: item.id })}
+                          className="bg-gray-300 text-black px-3 py-1 rounded"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <button
                     onClick={() => handleRemove(item.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 mt-2"
                   >
                     Remove
                   </button>
@@ -85,17 +112,23 @@ const Cart = () => {
             </h2>
 
             <div className="flex gap-4">
-              <a
-                href="/products"
+              <Link
+                to="/products"
                 className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
               >
                 Continue Shopping
-              </a>
+              </Link>
               <button
                 onClick={() => dispatch({ type: "CLEAR_CART" })}
                 className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800"
               >
                 Clear Cart
+              </button>
+              <button
+                onClick={handleSaveCart}
+                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800"
+              >
+                Save Cart
               </button>
             </div>
           </div>
@@ -103,12 +136,12 @@ const Cart = () => {
       ) : (
         <div className="text-center">
           <p className="text-gray-600 mb-4">Your cart is empty.</p>
-          <a
-            href="/products"
+          <Link
+            to="/products"
             className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
           >
             Continue Shopping
-          </a>
+          </Link>
         </div>
       )}
     </div>
