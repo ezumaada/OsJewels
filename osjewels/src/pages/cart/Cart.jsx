@@ -1,46 +1,89 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { initializeApp } from 'firebase/app';
 import { useCart } from "../../cartcontext/CartContext";
-import { saveCart } from "../../services/saveCart"; // Import the saveCart function
-import { Link } from "react-router-dom";
+import { saveCart } from "../../services/saveCart";
+import { Link, useNavigate } from "react-router-dom";
+
+import { getAuth,  } from "firebase/auth"; // Added missing import
+import { db } from "../../firebase";
 
 const Cart = () => {
+  const auth = getAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const navigate = useNavigate();
   const { cart, dispatch } = useCart();
+  
+  
 
-  // Calculate total price
+  useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    // Check if the user is authenticated
+    if (!user) {
+      console.error("User is not authenticated");
+      setIsAuthenticated(false);  // Optionally, set state to show that the user is not authenticated
+    } else {
+      setIsAuthenticated(true);  // If the user is authenticated, set the state accordingly
+    }
+  }, []);
+
   const totalPrice = cart.reduce(
-    (total, item) => total + item.price * item.quantity, 0
+    (total, item) => total + item.price * item.quantity,
+    0
   );
 
-  // Calculate total items
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
-  console.log("Cart contents:", cart);
+ 
 
-  // Handle saving the cart
-  const handleSaveCart = async () => {
+const handleCheckout = async () => {
+  if (!isAuthenticated) {
+    // If user is not authenticated, navigate to signin
+    navigate("/signin", { state: { from: "/cart" } });
+    return;
+  }
+
+  setIsLoading(true); // Start loading
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("User is not authenticated.");
+    }
+
     const cartData = {
       items: cart,
-      totalPrice,
-      totalItems,
+      totalPrice: totalPrice,
+      totalItems: totalItems,
       createdAt: new Date().toISOString(),
+      userId: user.uid, // Use currentUser.uid to save cart for authenticated user
+      userEmail: user.email, // Include user email for identification
     };
 
-    try {
-      await saveCart(cartData);
-      alert("Cart saved successfully!");
-    } catch (error) {
-      console.error("Error saving cart:", error.message);
-      alert("Failed to save cart. Please try again.");
-    }
+    // Save cart to Firestore
+    const savedCartId = await saveCart(cartData, user.uid);
+    dispatch({ type: "CLEAR_CART" });
+
+    // Redirect to the success page after successful checkout
+    navigate("/", { state: { orderId: savedCartId } });
+  } catch (error) {
+    console.error("Error saving cart:", error);
+    alert("Failed to complete the checkout. Please try again.");
+  } finally {
+    setIsLoading(false); // Stop loading regardless of the result
+  }
+};
+
+
+  const handleQuantityChange = (id, action) => {
+    dispatch({ type: action, payload: id });
   };
 
   const handleRemove = (id) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
-  };
-
-  const handleQuantityChange = (id, change) => {
-    // Ensure quantity does not go below 1 when decreasing
-    dispatch({ type: "UPDATE_QUANTITY", payload: { id, change } });
   };
 
   return (
@@ -54,7 +97,6 @@ const Cart = () => {
 
       {cart.length > 0 ? (
         <div>
-          {/* Cart Items */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {cart.map((item) => (
               <div
@@ -69,25 +111,25 @@ const Cart = () => {
                   />
                   <div className="flex-1">
                     <h2 className="text-xl font-bold">{item.title}</h2>
-                    <p className="text-gray-600">${item.price}</p>
+                    <p className="text-gray-600"> ${(isNaN(item.price) ? 0 : parseFloat(item.price)).toFixed(2)}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <label htmlFor={`quantity-${item.id}`} className="text-sm">
                         Quantity:
                       </label>
-
-                      {/* Quantity Change Buttons */}
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => dispatch({ type: 'DECREMENT_QUANTITY', payload: item.id })}
-                          className="bg-gray-300 text-black px-3 py-1 rounded"
+                          onClick={() => handleQuantityChange(item.id, "DECREMENT_QUANTITY")}
+                          className="bg-gray-300 text-black px-3 py-1 rounded disabled:opacity-50"
                           disabled={item.quantity <= 1}
+                          aria-label="Decrease quantity"
                         >
                           -
                         </button>
                         <span className="mx-2">{item.quantity}</span>
                         <button
-                           onClick={() => dispatch({ type: 'INCREMENT_QUANTITY', payload: item.id })}
+                          onClick={() => handleQuantityChange(item.id, "INCREMENT_QUANTITY")}
                           className="bg-gray-300 text-black px-3 py-1 rounded"
+                          aria-label="Increase quantity"
                         >
                           +
                         </button>
@@ -97,6 +139,7 @@ const Cart = () => {
                   <button
                     onClick={() => handleRemove(item.id)}
                     className="text-red-600 hover:text-red-800 mt-2"
+                    aria-label={`Remove ${item.title} from cart`}
                   >
                     Remove
                   </button>
@@ -105,7 +148,6 @@ const Cart = () => {
             ))}
           </div>
 
-          {/* Total and Actions */}
           <div className="border-t pt-4">
             <h2 className="text-xl font-bold mb-4">
               Total: <span className="text-green-600">${totalPrice.toFixed(2)}</span>
@@ -114,31 +156,32 @@ const Cart = () => {
             <div className="flex gap-4">
               <Link
                 to="/products"
-                className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
+                className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition-colors"
               >
                 Continue Shopping
               </Link>
               <button
                 onClick={() => dispatch({ type: "CLEAR_CART" })}
-                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800"
+                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800 transition-colors"
               >
                 Clear Cart
               </button>
               <button
-                onClick={handleSaveCart}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800"
+                className="bg-black text-white px-4 py-2 rounded hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+                onClick={handleCheckout}
+                disabled={isLoading}
               >
-                Save Cart
+                {isLoading ? "Processing..." : isAuthenticated ? "Checkout" : "Sign in to Checkout"}
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="text-center">
+        <div className="text-center py-8">
           <p className="text-gray-600 mb-4">Your cart is empty.</p>
           <Link
             to="/products"
-            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
+            className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition-colors"
           >
             Continue Shopping
           </Link>

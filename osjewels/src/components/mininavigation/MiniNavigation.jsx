@@ -5,7 +5,7 @@ const MiniNavigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Collections", path: "/collections" },
+    
     { name: "Designers", path: "/designers" },
     { name: "Watches", path: "/watches" },
     { name: "Rings", path: "/rings" },

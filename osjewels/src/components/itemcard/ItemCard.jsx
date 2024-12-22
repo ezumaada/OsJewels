@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useCart } from "../../cartcontext/CartContext";
+import Toast from '../../components/toast/Toast';
 
 const ItemCard = ({ product = {} }) => {
   const { id, img, title, desc, newPrice, oldPrice, onSale } = product;
   const { dispatch } = useCart();
+  const [showToast, setShowToast] = React.useState(false);
 
   // State for toggling image size
   const [isImageEnlarged, setIsImageEnlarged] = useState(false);
@@ -25,6 +27,7 @@ const ItemCard = ({ product = {} }) => {
       onSale,
     };
     console.log("Add to Cart clicked!", product);
+    setShowToast(true);
     dispatch({ type: "ADD_TO_CART", payload: itemToAdd });
   };
 
@@ -84,6 +87,11 @@ const ItemCard = ({ product = {} }) => {
           >
             Add to Cart
           </button>
+          <Toast 
+        title={title}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
         </div>
       </div>
     </div>

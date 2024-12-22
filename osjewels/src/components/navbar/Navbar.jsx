@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../authcontext/AuthContext';
 
-
+import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../cartcontext/CartContext";
 
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
+  const { user, logOut } = useAuth();
   const { cart, getTotalQuantity } = useCart(); // Access cart and total quantity
 
   const totalQuantity = getTotalQuantity();
@@ -39,18 +43,18 @@ const Navbar = () => {
   
 
   return (
-    <div>
+    <div className='my-6'>
         {/* Navbar for small screens */}
-      <div className="flex shadow-lg justify-between gap-6 mt-11 mx-[5vw] py-5 items-center p-4 md:hidden">
+      <div className="flex shadow-lg justify-between gap-6 mt-11 mx-[5vw]  items-center p-4 md:hidden">
         <div className='flex items-center gap-3 flex-row'>        
          {/* Hamburger icon */}
             <button onClick={toggleSidebar} className="text-black">
-          <img src="/images/burger-icon.png" alt="Hamburger-icon" className="h-8" />
+          <img src="/images/burger-icon.png" alt="Hamburger-icon" className="h-6" />
             </button>
-            <Link to="/categories"><img src="/images/search-icon.svg" alt="search-icon" /></Link>
+            <Link to="/products"><img src="/images/search-icon.svg" alt="search-icon" /></Link>
         </div>
          {/* Logo */}
-         <img src="/images/oster-logo.png" alt="Logo" className="h-8" />
+         <Link to="/"><img src="/images/ingourd-black-logo.png"  alt="logo" /> </Link>
          <div className='flex flex-row gap-3'>
             
             <Link to="/cart" className="relative inline-flex">
@@ -67,23 +71,33 @@ const Navbar = () => {
       
       {/* Full navbar for md & lg screens */}
         
-      <div className='hidden md:flex shadow-lg mt-11 mx-[5vw] px-4 py-5 flex-row justify-between items-center gap-5'>
+      <div className='hidden md:flex shadow-lg mt-11 mx-[5vw] px-4  flex-row justify-between items-center gap-5'>
         <div>
-            <Link to="/"><img src="/images/oster-logo.png" alt="logo" /> </Link>
+            <Link to="/"><img src="/images/ingourd-black-logo.png" alt="logo" /> </Link>
         </div>
         <div>
-            <ul className='flex flex-row items-center justify-between gap-5'>
-            <li className='hover:text-md transition duration-300 text-sm'><Link to="/products">Shop <hr  /></Link></li>
-            <li className='hover:text-md transition duration-300 text-sm'><Link to="/sales">On Sale</Link></li>
-                      
-            </ul>
-        </div>
-        <div className="relative w-3/4 h-16 shadow-lg"> {/* Added shadow-lg for box shadow */}
-            <input type="text"
-                className="w-full p-2 pl-4 h-full pr-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Search for Products..." />
-            <button className="absolute right-2 top-2 h-3/4 bg-blue-800 hover:bg-black text-white px-4 py-2         rounded-r-lg">Search   </button>
-      </div>
+  <ul className="flex flex-row items-center justify-between gap-7">
+    <li className="transition duration-300 text-md transform hover:scale-105">
+      <Link to="/products">
+        Shop
+        <hr />
+      </Link>
+    </li>
+
+    <li className="transition duration-300 text-md transform hover:scale-105">
+      <Link to="/sales">On Sale</Link>
+    </li>
+
+    <li className="transition duration-300 text-md transform hover:scale-105">
+      <Link to="/about">
+        About Us
+        <hr />
+      </Link>
+    </li>
+  </ul>
+</div>
+
+        
         <div className='flex flex-row gap-3'>
             <Link to="/cart" className="relative inline-flex"><img src="/images/cart-icon.svg" alt="cart" className='w-[35px] h-[35px] md:w-[35px] md:h-[35px]'/> {totalQuantity > 0 && (
           <div className="absolute -top-2 -right-2 bg-red-500 text-white w-[16px] h-[16px] rounded-full flex items-center justify-center text-xs font-bold">
@@ -93,6 +107,25 @@ const Navbar = () => {
            
                 
         </div>
+        {/* Conditionally render Sign In or Sign Out */}
+        {!user ? (
+            <Link to="/signin" className="text-black border-black border-solid border-2 px-3 py-2">Sign In</Link>
+          ) : (
+            <button
+  onClick={async () => {
+    try {
+      await logOut(); // Log out the user
+      navigate("/"); // Redirect to homepage after successful sign-out
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  }}
+  className="text-black border-black border-solid border-2 px-3 py-2"
+>
+  Sign Out
+</button>
+
+          )}
         </div>
 
         {/* Sidebar for small screens (opens on click) */}
@@ -116,17 +149,22 @@ const Navbar = () => {
             </button>
             <ul className="p-4">
               <li className="my-4">
-                <Link to="/arrivals" className='hover:text-lg transition duration-300'>
+                <Link to="/watches" className='hover:text-lg transition duration-300'>
                   New Arrivals
                 </Link>
               </li>
               <li className="my-4">
-                <Link to="/sales" className='hover:text-lg transition duration-300'>
+                <Link to="/rings" className='hover:text-lg transition duration-300'>
                   On Sale
                 </Link>
               </li>
               <li className="my-4">
-                <Link to="/brands" className='hover:text-lg transition duration-300'>
+                <Link to="/diamonds" className='hover:text-lg transition duration-300'>
+                  Brands
+                </Link>
+              </li>
+              <li className="my-4">
+                <Link to="/sales" className='hover:text-lg transition duration-300'>
                   Brands
                 </Link>
               </li>

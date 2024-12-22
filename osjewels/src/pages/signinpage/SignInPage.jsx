@@ -2,20 +2,12 @@ import React, { useState } from "react";
 import { Alert, AlertDescription } from "../../components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useCart } from "../../cartcontext/CartContext"; // Assuming you have a Cart Context
 
-const SignInPage = ({
-  onSignIn = async (email, password) => {
-    const auth = getAuth();
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
-  },
-  onForgotPassword = async (email) => {
-    const auth = getAuth();
-    await sendPasswordResetEmail(auth, email);
-    console.log("Password reset email sent");
-  },
-  onSignUp = () => console.log("Sign up clicked"),
-}) => {
+const SignInPage = () => {
+  const location = useLocation();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,6 +15,9 @@ const SignInPage = ({
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { dispatch } = useCart();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,23 +43,39 @@ const SignInPage = ({
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  console.log("Redirect path:", location.state?.from);
+
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     if (!validateForm()) return;
-
+  
     setIsLoading(true);
+    const auth = getAuth();
+  
     try {
-      const user = await onSignIn(formData.email, formData.password);
-      console.log("Signed in user:", user);
+      const userCredential = await signInWithEmailAndPassword(
+        auth, 
+        formData.email, 
+        formData.password
+      );
+      console.log("Signed in user:", userCredential.user);
+  
+      // Retrieve the cart from localStorage and update the context
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      dispatch({ type: "SET_CART", payload: savedCart });
+  
+      // Check if there's a redirect path in the location state
+      const from = location.state?.from || '/';
+      navigate(from); // Redirect to the stored path or homepage
     } catch (err) {
       if (err.code === "auth/wrong-password") {
         setError("Incorrect password. Please try again.");
       } else if (err.code === "auth/user-not-found") {
         setError("No user found with this email.");
       } else {
-        setError(err.message || "An error occurred during sign in");
+        setError(err.message || "An error occurred during sign in.");
       }
     } finally {
       setIsLoading(false);
@@ -77,7 +88,8 @@ const SignInPage = ({
       return;
     }
     try {
-      await onForgotPassword(formData.email);
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, formData.email);
       setError("Password reset email sent. Check your inbox.");
     } catch (err) {
       setError(err.message || "Failed to send password reset email.");
@@ -88,8 +100,13 @@ const SignInPage = ({
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-8">Welcome Back</h1>
+        {location.state?.from === '/cart' && (
+          <p className="text-sm text-gray-600 text-center mb-4">
+            Sign in to complete your checkout
+          </p>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSignIn} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
@@ -171,9 +188,9 @@ const SignInPage = ({
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}
-            <button onClick={onSignUp} className="font-medium text-blue-600 hover:text-blue-500">
-             <Link to="/signup">Sign up now</Link> 
-            </button>
+            <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+              Sign up now
+            </Link>
           </p>
         </div>
       </div>

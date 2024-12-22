@@ -58,10 +58,10 @@ const Cert = () => {
               your personalized discount code via email after purchasing a watch via our online stores.
             </p>
             <Link
-              to="/collections"
+              to="/bens"
               className="bg-black items-center  text-white px-6 py-3 rounded-md shadow-md hover:bg-gray-800 transition-colors"
             >
-              View All Collections
+              Bell Ross Watches
             </Link>
           </div>
           {/* Right Image */}

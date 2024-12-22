@@ -5,23 +5,23 @@ const AboutPage = () => {
     {
       name: "Kurt Johnson",
       role: "Jewelry Designer",
-      email: "Kurt.j@example.com",
+      email: "kurtt.j@outlook.com",
       phone: "+1 (234) 567-890",
-      img: "/image/team2.jpeg",
+      img: "/images/team3.jpeg",
     },
     {
       name: "Michael Smith",
       role: "Sales Manager",
       email: "michael.s@example.com",
       phone: "+1 (987) 654-321",
-      img: "/image/team2.jpeg",
+      img: "/images/team2.png",
     },
     {
       name: "Emily Davis",
       role: "Customer Support",
-      email: "emily.d@example.com",
+      email: "emilyy.d@hotmail.com",
       phone: "+1 (456) 789-012",
-      img: "/image/team1.jpeg",
+      img: "/images/team1.jpeg",
     },
   ];
 
@@ -49,8 +49,8 @@ const AboutPage = () => {
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div className="animate-fade-left">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Story</h2>
-            <p className="text-gray-700 leading-relaxed">
-              At Oster Jewelers, we believe in crafting timeless jewelry that
+            <p className="text-gray-700 font-semibold leading-relaxed">
+              At <span className="font-bold">Ingoude Jewelers</span>, we believe in crafting timeless jewelry that
               tells a story. Every piece in our collection is a blend of
               elegance, craftsmanship, and quality. With decades of experience
               in the industry, we are committed to delivering unmatched
@@ -59,9 +59,9 @@ const AboutPage = () => {
           </div>
           <div className="animate-fade-right">
             <img
-              src="/path-to-about-image.jpg"
+              src="/images/oleimages/lifestyle1.png"
               alt="Our Story"
-              className="rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg h-[600px] w-[500px]"
             />
           </div>
         </div>

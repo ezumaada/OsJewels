@@ -1,7 +1,7 @@
 // services/authService.js
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
-const auth = getAuth();
 
 // Signup function
 export const signUp = async (email, password) => {
@@ -17,9 +17,10 @@ export const signUp = async (email, password) => {
 export const signIn = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user; // Returns the signed-in user
+    return userCredential.user;
   } catch (error) {
-    throw error; // Handle errors appropriately
+    console.error("Error during sign in:", error);
+    throw error;
   }
 };
 

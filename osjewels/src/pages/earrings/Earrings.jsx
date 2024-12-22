@@ -8,14 +8,14 @@ const Earrings = () => {
     const categoryProducts = products.filter((product) => product.category === "earrings");
     return (
       <div className="container mx-auto px-4 py-8">
-         <h1 className="text-3xl font-bold mb-6">Watch Collection</h1>
+         <h1 className="text-3xl font-bold mb-6">Earrings Collection</h1>
       <div className="prose max-w-none mb-8">
         <p className="text-gray-700 leading-relaxed">
-          Experience the elegance of our Watch Collection at Oster Jewelers. 
+          Experience the elegance of our Earrings Collection at Os Jewels. 
           This collection showcases the finest craftsmanship, featuring pieces 
           that are both timeless and modern. From classic chronographs to 
-          sophisticated dress watches, each piece is crafted with the utmost 
-          precision and care. Our watches are not only beautiful but also 
+          sophisticated dress earrings, each piece is crafted with the utmost 
+          precision and care. Our earrings are not only beautiful but also 
           versatile, making them the perfect addition to any collection.
         </p>
       </div>

@@ -8,16 +8,17 @@ const RingsPage = () => {
     const categoryProducts = products.filter((product) => product.category === "rings");
     return (
       <div className="container mx-auto px-4 py-8">
-         <h1 className="text-3xl font-bold mb-6">Watch Collection</h1>
+         <h1 className="text-3xl font-bold mb-6">Rings Collection</h1>
       <div className="prose max-w-none mb-8">
-        <p className="text-gray-700 leading-relaxed">
-          Experience the elegance of our Watch Collection at Oster Jewelers. 
-          This collection showcases the finest craftsmanship, featuring pieces 
-          that are both timeless and modern. From classic chronographs to 
-          sophisticated dress watches, each piece is crafted with the utmost 
-          precision and care. Our watches are not only beautiful but also 
-          versatile, making them the perfect addition to any collection.
-        </p>
+      <p className="text-gray-700 leading-relaxed">
+  Experience the elegance of our Ring Collection at Oster Jewelers. 
+  This collection showcases the finest craftsmanship, featuring designs 
+  that are both timeless and modern. From classic solitaires to intricate 
+  gemstone-studded bands, each piece is crafted with the utmost precision 
+  and care. Our rings are not only stunning but also versatile, making them 
+  the perfect addition to any jewelry collection.
+</p>
+
       </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categoryProducts.map((product) => (
