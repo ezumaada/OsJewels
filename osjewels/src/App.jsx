@@ -25,6 +25,7 @@ import PrivacyPolicy from './pages/privacypolicy/PrivacyPolicy';
 import { useCart } from './cartcontext/CartContext';
 import { AuthProvider } from './authcontext/AuthContext';
 import Nomos from './pages/nomos/Nomos';
+import CookieConsent from './components/cookieconsent/CookieConsent';
 
 // Initialize Firebase Authentication
 const auth = getAuth();
@@ -106,6 +107,7 @@ const App = () => {
           <Route path="/earrings" element={<Earrings />} />
           <Route path="/nomos" element={<Nomos />} />
         </Routes>
+        <CookieConsent/>
         <Toast />
         <Footer />
       </BrowserRouter>
